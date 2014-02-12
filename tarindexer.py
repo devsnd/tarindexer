@@ -29,7 +29,6 @@ import tarfile
 import sys
 import os
 import time
-import re
 import codecs
 
 usage = """create index file:
@@ -87,10 +86,11 @@ def lookup(dbtarfile,indexfile,path):
     tar = open(dbtarfile, 'rb')
     outfile = open(indexfile, 'r')
     for line in outfile.readlines():
-        if path in line:
-            m = re.match('^.+\\s(\\d+)\\s(\\d+)$',line).groups()
-            tar.seek(int(m[0]))
-            a = codecs.decode(tar.read(int(m[1])),'ASCII')
+        assert line[-1] == "\n"
+        m = line[:-1].rsplit(" ", 2)
+        if path == m[0]:
+            tar.seek(int(m[1]))
+            a = codecs.decode(tar.read(int(m[2])),'ASCII')
             print(a)
 
 
