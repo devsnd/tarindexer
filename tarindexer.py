@@ -49,45 +49,44 @@ def indextar(dbtarfile,indexfile):
     filesize = os.path.getsize(dbtarfile)
     lastpercent = 0
     
-    db = tarfile.open(dbtarfile, 'r|')
-    if os.path.isfile(indexfile):
-        print('file exists. exiting')
-    outfile = open(indexfile, 'w')
-    counter = 0
-    print('One dot stands for 1000 indexed files.')
-    #tarinfo = db.next()
-    for tarinfo in db:
-        currentseek = tarinfo.offset_data
-        rec = "%s %d %d\n" % (tarinfo.name, tarinfo.offset_data, tarinfo.size)
-        outfile.write(rec)
-        counter += 1
-        if counter % 1000 == 0:
-            # free ram...
-            db.members = []
-        if(currentseek/filesize>lastpercent):
-            print('')
-            percent = int(currentseek/filesize*1000.0)/10
-            print(str(percent)+'%')
-            lastpercent+=0.01
-            print(human(currentseek)+'/'+human(filesize))
-            if(percent!=0):
-                estimate = ((time.time()-starttime)/percent)*100
-                eta = (starttime+estimate)-time.time()
-                print('ETA: '+str(int(eta))+'s (estimate '+str(int(estimate))+'s)')
-    outfile.close()
-    db.close()
+
+    with tarfile.open(dbtarfile, 'r|') as db:
+        if os.path.isfile(indexfile):
+            print('file exists. exiting')
+
+        with open(indexfile, 'w') as outfile:
+            counter = 0
+            print('One dot stands for 1000 indexed files.')
+            #tarinfo = db.next()
+            for tarinfo in db:
+                currentseek = tarinfo.offset_data
+                rec = "%s %d %d\n" % (tarinfo.name, tarinfo.offset_data, tarinfo.size)
+                outfile.write(rec)
+                counter += 1
+                if counter % 1000 == 0:
+                    # free ram...
+                    db.members = []
+                if(currentseek/filesize>lastpercent):
+                    print('')
+                    percent = int(currentseek/filesize*1000.0)/10
+                    print(str(percent)+'%')
+                    lastpercent+=0.01
+                    print(human(currentseek)+'/'+human(filesize))
+                    if(percent!=0):
+                        estimate = ((time.time()-starttime)/percent)*100
+                        eta = (starttime+estimate)-time.time()
+                        print('ETA: '+str(int(eta))+'s (estimate '+str(int(estimate))+'s)')
     print('done.')
 
 def lookup(dbtarfile,indexfile,path):
-    tar = open(dbtarfile, 'rb')
-    outfile = open(indexfile, 'r')
-    for line in outfile.readlines():
-        assert line[-1] == "\n"
-        m = line[:-1].rsplit(" ", 2)
-        if path == m[0]:
-            tar.seek(int(m[1]))
-            a = codecs.decode(tar.read(int(m[2])),'ASCII')
-            print(a)
+    with open(dbtarfile, 'rb') as tar:
+        with  open(indexfile, 'r') as outfile:
+            for line in outfile.readlines():
+                m = line[:-1].rsplit(" ", 2)
+                if path == m[0]:
+                    tar.seek(int(m[1]))
+                    a = codecs.decode(tar.read(int(m[2])),'ASCII')
+                    print(a)
 
 
 def main():
