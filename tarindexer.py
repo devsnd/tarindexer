@@ -58,12 +58,8 @@ def indextar(dbtarfile,indexfile):
     #tarinfo = db.next()
     for tarinfo in db:
         currentseek = tarinfo.offset_data
-        outfile.write(tarinfo.name)
-        outfile.write(' ')
-        outfile.write(str(tarinfo.offset_data))
-        outfile.write(' ')
-        outfile.write(str(tarinfo.size))
-        outfile.write('\n')
+        rec = "%s %d %d\n" % (tarinfo.name, tarinfo.offset_data, tarinfo.size)
+        outfile.write(rec)
         counter += 1
         if counter % 1000 == 0:
             # free ram...
