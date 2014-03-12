@@ -36,7 +36,9 @@ usage = """create index file:
 lookup file using indexfile:
     tarindexer -l tarfile.tar indexfile.index lookuppath
 """
-        
+
+starttime = time.time()
+
 def human(size):
     a = 'B','kB','mB','gB','tB','pB'
     curr = 'B'
@@ -90,7 +92,6 @@ def lookup(dbtarfile,indexfile,path):
 
 
 def main():
-    starttime = time.time()
     MODE = ''
     dbtarfile = ''
     indexfile = ''
