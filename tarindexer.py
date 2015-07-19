@@ -87,8 +87,8 @@ def lookup(dbtarfile,indexfile,path):
                 m = line[:-1].rsplit(" ", 2)
                 if path == m[0]:
                     tar.seek(int(m[1]))
-                    a = codecs.decode(tar.read(int(m[2])),'ASCII')
-                    print(a)
+                    buffer = tar.read(int(m[2]))
+                    os.write (sys.stdout.fileno (), buffer)
 
 
 def main():
